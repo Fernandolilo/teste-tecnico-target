@@ -1,6 +1,5 @@
-package com.target.entity;
+package com.target.entities;
 
-import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -10,7 +9,7 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.ManyToMany;
+import jakarta.persistence.OneToMany; // <-- Ajustado para OneToMany
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -22,29 +21,18 @@ import lombok.ToString;
 @Builder
 @Data
 @Entity
-public class Estoque {
-	
+public class Vendedor {
+
 	@Id
-	@GeneratedValue(strategy = GenerationType.UUID)	
+	@GeneratedValue(strategy = GenerationType.UUID)
 	private UUID id;
 	
-	@Column(name = "CODIGO_PRODUTO")
-	private int codigoProduto;
+	@Column(name = "NOME_VENDEDOR")
+	private String nome;
 	
-	@Column(name = "DESCRICAO_PRODUTO")
-	private String descricaoProduto;
-	
-	@Column(name = "PRECO_PRODUTO")
-	private BigDecimal precoProduto;
-	
-	@Column(name = "ESTOQUE_PRODUTO")
-	private double estoque;
-	
-	@ManyToMany(mappedBy = "produtos")
+	//OneToMany, mapeando pelo campo "vendedor" lá da classe Venda
+	@OneToMany(mappedBy = "vendedor")
 	@Builder.Default
 	@ToString.Exclude
 	private List<Venda> vendas = new ArrayList<>();
-	
-	
-	
 }

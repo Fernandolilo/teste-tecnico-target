@@ -1,4 +1,4 @@
-package com.target.entity;
+package com.target.entities;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
