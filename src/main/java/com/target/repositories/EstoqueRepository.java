@@ -4,9 +4,11 @@ import java.util.UUID;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.stereotype.Repository;
 
 import com.target.entities.Estoque;
 
+@Repository
 public interface EstoqueRepository extends JpaRepository<Estoque, UUID>{
 	
 	@Query("SELECT MAX(e.codigoProduto) FROM Estoque e")
