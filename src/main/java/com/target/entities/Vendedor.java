@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -30,6 +32,8 @@ public class Vendedor {
 	@Column(name = "NOME_VENDEDOR")
 	private String nome;
 	
+	
+	@JsonBackReference
 	//OneToMany, mapeando pelo campo "vendedor" lá da classe Venda
 	@OneToMany(mappedBy = "vendedor")
 	@Builder.Default

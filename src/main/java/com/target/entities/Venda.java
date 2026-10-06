@@ -34,8 +34,8 @@ public class Venda {
 	private LocalDate instante;
 	
 	@ManyToOne
-    @JoinColumn(name = "vendedor_id")
-    private Vendedor vendedor;
+	@JoinColumn(name = "vendedor_id")
+	private Vendedor vendedor;
     
     @ManyToMany
     @JoinTable(

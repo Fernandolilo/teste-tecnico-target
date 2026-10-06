@@ -5,8 +5,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
-import com.target.entities.Estoque;
-
 import jakarta.persistence.Column;
 import lombok.AllArgsConstructor;
 import lombok.Builder;

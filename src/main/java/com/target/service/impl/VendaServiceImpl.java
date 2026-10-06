@@ -3,13 +3,16 @@ package com.target.service.impl;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 
-import com.target.entities.Estoque;
 import com.target.entities.Venda;
+import com.target.entities.Vendedor;
 import com.target.entities.request.VendaRequest;
-import com.target.repositories.EstoqueRepository;
+import com.target.entities.response.VendedorResponse;
 import com.target.repositories.VendaRepository;
+import com.target.service.EstoqueService;
 import com.target.service.VendaService;
+import com.target.service.VendedorService;
 
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 
 @Service
@@ -18,28 +21,30 @@ public class VendaServiceImpl implements VendaService {
 
 	private final VendaRepository repository;
 	private final ModelMapper mapper;
-	private final EstoqueRepository estoqueRepository;
-
+	private final EstoqueService estoqueService;
+	private final VendedorService  vendedorService;
+	
+	
+	@Transactional
 	@Override
 	public Venda crate(VendaRequest request) {
-
 		Venda venda = mapper.map(request, Venda.class);
-
+		
+		  Vendedor vendedor = vendedorService.findEntityById(request.getVendedor());
+	   
 		venda.getProdutos().forEach(item -> {
 
-			Estoque estoqueResponse = estoqueRepository.findById(item.getId())
-					.orElseThrow(() -> new RuntimeException("Produto não encontrado no estoque"));
+			estoqueService.reduceStock(item.getId(), item.getQuantidade());
 
-			if (estoqueResponse.getQuantidade() < item.getQuantidade()) {
-				throw new RuntimeException(
-						"Estoque insuficiente para o produto: " + estoqueResponse.getDescricaoProduto());
-			}
-
-			estoqueResponse.setQuantidade(estoqueResponse.getQuantidade() - item.getQuantidade());
-
-			estoqueRepository.save(estoqueResponse);
 		});
+		
+		   venda.setVendedor(vendedor);
+
 
 		return repository.save(venda);
 	}
+
+
+	
+
 }
