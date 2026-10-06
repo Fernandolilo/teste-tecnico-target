@@ -24,6 +24,6 @@ public class EstoqueResponse {
 	private BigDecimal precoProduto;
 	
 	@Column(name = "ESTOQUE_PRODUTO")
-	private double estoque;
+	private double quantidade;
 
 }
