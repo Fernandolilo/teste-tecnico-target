@@ -355,6 +355,33 @@ Este projeto foi desenvolvido como parte de um **teste técnico para avaliação
 }
 '''
 
+```text Para acesso do h2 com o docker passe a senha jdbc:h2:mem:testdb ```
+
+para fazer teste da aplicação com o Docker, basta dar um docker compose up na raiz do pejeto.
+
+```
+services:
+  teste-tecnico-target:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: teste-tecnico-target
+    ports:
+      - "8000:8000"
+    restart: always
+    volumes:
+      - h2-data:/data
+    networks:
+      - services
+
+volumes:
+  h2-data:
+
+networks:
+  services:
+    driver: bridge
+```
+
 ## Autor
 
 **Fernando da Silva**
