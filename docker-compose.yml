@@ -1,0 +1,20 @@
+services:
+  teste-tecnico-target:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: teste-tecnico-target
+    ports:
+      - "8000:8000"
+    restart: always
+    volumes:
+      - h2-data:/data
+    networks:
+      - services
+
+volumes:
+  h2-data:
+
+networks:
+  services:
+    driver: bridge
