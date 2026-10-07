@@ -101,6 +101,8 @@ public class VendaServiceImpl implements VendaService {
 	                .build();
 	    }
 
+	    
+	    //CALCULO DE COMISSAO
 		@Override
 		public BigDecimal calculateCommission(BigDecimal valorTotal) {
 			   if (valorTotal.compareTo(BigDecimal.valueOf(100)) < 0) {
@@ -114,6 +116,10 @@ public class VendaServiceImpl implements VendaService {
 			    return valorTotal.multiply(BigDecimal.valueOf(0.05));
 		}
 
+		
+		/*
+		 * METODO CRIADO PARA VER AS COMISSOES 
+		 */
 
 		@Override
 		public ComissoesListResponse findAllCommissions() {
@@ -144,6 +150,10 @@ public class VendaServiceImpl implements VendaService {
 		            .build();
 		}
 		
+		/*
+		 * CRIEI O PAGAMENTO PARA TER MAIS SENTIDO NA QUESTÃO DE COBRACA DE JUROS. 
+		 * 
+		 */
 		@Override
 		@Transactional
 		public VendaResponse pay(UUID id, PagamentoRequest request) {
@@ -177,6 +187,11 @@ public class VendaServiceImpl implements VendaService {
 		    return mapper.map(venda, VendaResponse.class);
 		}
 		
+		
+		
+		/*
+		 * ATUALIZA O PAGAMENTO JA CRIA A TAXA DE JUROS DE ACORDO COM O PAGAMENTO.  
+		 */
 		private BigDecimal calculateInterest(
 		        BigDecimal valor,
 		        LocalDate dataVencimento,

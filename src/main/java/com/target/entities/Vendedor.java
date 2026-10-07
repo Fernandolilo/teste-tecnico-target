@@ -11,7 +11,9 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.OneToMany; // <-- Ajustado para OneToMany
+import jakarta.persistence.OneToMany;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -25,18 +27,26 @@ import lombok.ToString;
 @Entity
 public class Vendedor {
 
-	@Id
-	@GeneratedValue(strategy = GenerationType.UUID)
-	private UUID id;
-	
-	@Column(name = "NOME_VENDEDOR")
-	private String nome;
-	
-	
-	@JsonBackReference
-	//OneToMany, mapeando pelo campo "vendedor" lá da classe Venda
-	@OneToMany(mappedBy = "vendedor")
-	@Builder.Default
-	@ToString.Exclude
-	private List<Venda> vendas = new ArrayList<>();
+    @Id
+    @GeneratedValue(strategy = GenerationType.UUID)
+    private UUID id;
+
+    @NotBlank(message = "O nome do vendedor é obrigatório")
+    @Size(
+        min = 3,
+        max = 100,
+        message = "O nome do vendedor deve ter entre 3 e 100 caracteres"
+    )
+    @Column(
+        name = "NOME_VENDEDOR",
+        nullable = false,
+        length = 100
+    )
+    private String nome;
+
+    @JsonBackReference
+    @OneToMany(mappedBy = "vendedor")
+    @Builder.Default
+    @ToString.Exclude
+    private List<Venda> vendas = new ArrayList<>();
 }

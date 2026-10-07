@@ -13,6 +13,10 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.ManyToMany;
+import jakarta.validation.constraints.DecimalMin;
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -25,29 +29,49 @@ import lombok.ToString;
 @Data
 @Entity
 public class Estoque {
-	
-	@Id
-	@GeneratedValue(strategy = GenerationType.UUID)	
-	private UUID id;
-	
-	@Column(name = "CODIGO_PRODUTO")
-	private int codigoProduto;
-	
-	@Column(name = "DESCRICAO_PRODUTO")
-	private String descricaoProduto;
-	
-	@Column(name = "PRECO_PRODUTO")
-	private BigDecimal precoProduto;
-	
-	@Column(name = "ESTOQUE_PRODUTO")
-	private double quantidade;
-	
-	@JsonBackReference
-	@ManyToMany(mappedBy = "produtos")
-	@Builder.Default
-	@ToString.Exclude
-	private List<Venda> vendas = new ArrayList<>();
-	
-	
-	
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.UUID)
+    private UUID id;
+
+    @NotNull(message = "O código do produto é obrigatório")
+    @Min(value = 1, message = "O código do produto deve ser maior que zero")
+    @Column(name = "CODIGO_PRODUTO", nullable = false)
+    private Integer codigoProduto;
+
+    @NotBlank(message = "A descrição do produto é obrigatória")
+    @Column(
+        name = "DESCRICAO_PRODUTO",
+        nullable = false
+    )
+    private String descricaoProduto;
+
+    @NotNull(message = "O preço do produto é obrigatório")
+    @DecimalMin(
+        value = "0.01",
+        message = "O preço do produto deve ser maior que zero"
+    )
+    @Column(
+        name = "PRECO_PRODUTO",
+        nullable = false
+    )
+    private BigDecimal precoProduto;
+
+    @NotNull(message = "A quantidade em estoque é obrigatória")
+    @DecimalMin(
+        value = "0.0",
+        inclusive = true,
+        message = "A quantidade não pode ser negativa"
+    )
+    @Column(
+        name = "ESTOQUE_PRODUTO",
+        nullable = false
+    )
+    private Double quantidade;
+
+    @JsonBackReference
+    @ManyToMany(mappedBy = "produtos")
+    @Builder.Default
+    @ToString.Exclude
+    private List<Venda> vendas = new ArrayList<>();
 }
