@@ -2,7 +2,9 @@ package com.target.service.impl;
 
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
@@ -10,6 +12,8 @@ import org.springframework.stereotype.Service;
 import com.target.entities.Venda;
 import com.target.entities.Vendedor;
 import com.target.entities.request.VendaRequest;
+import com.target.entities.response.ComissaoListResponse;
+import com.target.entities.response.ComissoesListResponse;
 import com.target.entities.response.VendaListResponse;
 import com.target.entities.response.VendaResponse;
 import com.target.entities.response.VendasListResponse;
@@ -95,9 +99,44 @@ public class VendaServiceImpl implements VendaService {
 	    }
 
 		@Override
-		public BigDecimal comicao(BigDecimal valorTotal) {
-			// TODO Auto-generated method stub
-			return null;
+		public BigDecimal calculateCommission(BigDecimal valorTotal) {
+			   if (valorTotal.compareTo(BigDecimal.valueOf(100)) < 0) {
+			        return BigDecimal.ZERO;
+			    }
+
+			    if (valorTotal.compareTo(BigDecimal.valueOf(500)) < 0) {
+			        return valorTotal.multiply(BigDecimal.valueOf(0.01));
+			    }
+
+			    return valorTotal.multiply(BigDecimal.valueOf(0.05));
+		}
+
+
+		@Override
+		public ComissoesListResponse findAllCommissions() {
+
+		    Map<String, BigDecimal> comissoes = repository.findAll()
+		            .stream()
+		            .collect(Collectors.groupingBy(
+		                    venda -> venda.getVendedor().getNome(),
+		                    Collectors.reducing(
+		                            BigDecimal.ZERO,
+		                            venda -> calculateCommission(venda.getValorTotal()),
+		                            BigDecimal::add
+		                    )
+		            ));
+
+		    List<ComissaoListResponse> vendedores = comissoes.entrySet()
+		            .stream()
+		            .map(entry -> ComissaoListResponse.builder()
+		                    .vendedor(entry.getKey())
+		                    .comissao(entry.getValue())
+		                    .build())
+		            .toList();
+
+		    return ComissoesListResponse.builder()
+		            .vendedores(vendedores)
+		            .build();
 		}
 }
 

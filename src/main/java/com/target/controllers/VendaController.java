@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.target.entities.Venda;
 import com.target.entities.request.VendaRequest;
+import com.target.entities.response.ComissoesListResponse;
 import com.target.entities.response.VendaResponse;
 import com.target.entities.response.VendasListResponse;
 import com.target.service.VendaService;
@@ -46,5 +47,10 @@ public class VendaController {
     public ResponseEntity<VendasListResponse> findAll() {
 
         return ResponseEntity.ok(service.findAll());
+    }
+    
+    @GetMapping(value = "/commision")
+    public ResponseEntity<ComissoesListResponse> findAllCommision() {
+        return ResponseEntity.ok(service.findAllCommissions());
     }
 }

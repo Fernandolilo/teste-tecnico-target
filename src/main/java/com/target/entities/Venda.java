@@ -36,6 +36,8 @@ public class Venda {
 	
 	private BigDecimal valorTotal;
 	
+	private BigDecimal commission;
+	
 	@ManyToOne
 	@JoinColumn(name = "vendedor_id")
 	private Vendedor vendedor;

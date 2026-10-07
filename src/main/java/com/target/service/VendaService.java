@@ -5,6 +5,7 @@ import java.util.UUID;
 
 import com.target.entities.Venda;
 import com.target.entities.request.VendaRequest;
+import com.target.entities.response.ComissoesListResponse;
 import com.target.entities.response.VendaResponse;
 import com.target.entities.response.VendasListResponse;
 
@@ -16,5 +17,7 @@ public interface VendaService {
 	
 	VendasListResponse findAll();
 	
-	BigDecimal comicao(BigDecimal valorTotal);
+	BigDecimal calculateCommission(BigDecimal valorTotal);
+	
+	ComissoesListResponse findAllCommissions();
 }
