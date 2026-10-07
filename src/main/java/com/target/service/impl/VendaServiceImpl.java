@@ -43,25 +43,24 @@ public class VendaServiceImpl implements VendaService {
 	    @Override
 	    public Venda crate(VendaRequest request) {
 
-	        Venda venda = mapper.map(request, Venda.class);
+	    	  Venda venda = mapper.map(request, Venda.class);
 
-	        Vendedor vendedor =
-	                vendedorService.findEntityById(request.getVendedor());
+		        Vendedor vendedor =
+		                vendedorService.findEntityById(request.getVendedor());
 
-	        venda.setVendedor(vendedor);
+		        venda.setVendedor(vendedor);
 
-	        venda.getProdutos().forEach(item -> {
-	            estoqueService.reduceStock(
-	                    item.getId(),
-	                    item.getQuantidade()
-	            );
-	        });
+		        BigDecimal total = calculateTotal(request);
 
-	        BigDecimal total = calculateTotal(request);
+		        venda.setValorTotal(total);
 
-	        venda.setValorTotal(total);
+		        BigDecimal commission = calculateCommission(total);
 
-	        return repository.save(venda);
+		        venda.setCommission(commission);
+
+		        venda.setStatusPagamento(StatusPagamento.PENDENTE);
+
+		        return repository.save(venda);
 	    }
 
 	   
@@ -125,7 +124,9 @@ public class VendaServiceImpl implements VendaService {
 		                    venda -> venda.getVendedor().getNome(),
 		                    Collectors.reducing(
 		                            BigDecimal.ZERO,
-		                            venda -> calculateCommission(venda.getValorTotal()),
+		                            venda -> venda.getCommission() != null
+		                                    ? venda.getCommission()
+		                                    : BigDecimal.ZERO,
 		                            BigDecimal::add
 		                    )
 		            ));
