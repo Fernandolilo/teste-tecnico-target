@@ -1,5 +1,8 @@
 package com.target.service.impl;
 
+import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -8,6 +11,7 @@ import org.springframework.stereotype.Service;
 
 import com.target.entities.Estoque;
 import com.target.entities.request.EstoqueRequest;
+import com.target.entities.response.EstoqueListResponse;
 import com.target.entities.response.EstoqueResponse;
 import com.target.repositories.EstoqueRepository;
 import com.target.service.EstoqueService;
@@ -71,6 +75,29 @@ public class EstoqueServiceImpl implements EstoqueService {
 		estoque.setQuantidade(estoque.getQuantidade() - quantidade);
 
 		repository.save(estoque);
+	}
+
+	
+	@Override
+	public BigDecimal calculateItemTotal(UUID produtoId, Integer quantidade) {
+		Estoque estoque = repository.findById(produtoId)
+	            .orElseThrow(() ->
+	                    new RuntimeException("Produto não encontrado"));
+
+	    return estoque.getPrecoProduto()
+	            .multiply(BigDecimal.valueOf(quantidade));	}
+
+	@Override
+	public EstoqueListResponse  findAll() {
+	
+		   List<EstoqueResponse> response = repository.findAll()
+		            .stream()
+		            .map(entity -> mapper.map(entity, EstoqueResponse.class))
+		            .toList();
+
+		    return EstoqueListResponse.builder()
+		            .estoque(response)
+		            .build();
 	}
 
 }

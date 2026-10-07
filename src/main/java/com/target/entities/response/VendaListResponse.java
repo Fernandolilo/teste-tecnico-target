@@ -1,6 +1,6 @@
-package com.target.entities.request;
+package com.target.entities.response;
 
-import java.util.UUID;
+import java.math.BigDecimal;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -11,12 +11,11 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Builder
 @Data
-public class ItemVendaRequest {
+public class VendaListResponse {
 
-    private UUID produtoId;
+	
+	private BigDecimal valor;
+	private String vendedor;
 
-    private Integer quantidade;
-    
-   
-
+	
 }

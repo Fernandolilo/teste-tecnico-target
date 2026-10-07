@@ -1,5 +1,6 @@
 package com.target.entities;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
@@ -33,6 +34,8 @@ public class Venda {
 	@Column(name = "DATA_VENDA")
 	private LocalDate instante;
 	
+	private BigDecimal valorTotal;
+	
 	@ManyToOne
 	@JoinColumn(name = "vendedor_id")
 	private Vendedor vendedor;
@@ -45,4 +48,7 @@ public class Venda {
     )
     @Builder.Default
     private List<Estoque> produtos = new ArrayList<>();
+    
+    
+   
 }

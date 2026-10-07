@@ -26,4 +26,6 @@ public class VendaRequest {
 	    private List<ItemVendaRequest> produtos =
 	        new ArrayList<>();
 
+	  
+	  
 }
