@@ -4,7 +4,7 @@ API REST desenvolvida em **Java 17** e **Spring Boot** para resolução do teste
 
 ## Sobre o projeto
 
-O projeto foi desenvolvido seguindo uma arquitetura em camadas, separando responsabilidades entre:
+O projeto utiliza uma arquitetura em camadas, separando as responsabilidades entre:
 
 * Controllers
 * Services
@@ -12,17 +12,13 @@ O projeto foi desenvolvido seguindo uma arquitetura em camadas, separando respon
 * Entities
 * DTOs
 
-O objetivo é manter as regras de negócio isoladas da camada de exposição da API e da persistência dos dados.
-
----
+O objetivo é manter as regras de negócio separadas da camada HTTP e da persistência dos dados.
 
 ## Funcionalidades
 
 ### 1. Comissão de vendas
 
-O sistema permite registrar vendas e calcular automaticamente a comissão do vendedor conforme o valor de cada venda.
-
-Regras:
+O sistema calcula automaticamente a comissão do vendedor conforme o valor total da venda.
 
 | Valor da venda                       | Comissão |
 | ------------------------------------ | -------: |
@@ -30,16 +26,17 @@ Regras:
 | De R$ 100,00 até abaixo de R$ 500,00 |       1% |
 | A partir de R$ 500,00                |       5% |
 
-A comissão calculada é armazenada na venda, permitindo posteriormente consultar o total de comissão acumulado por vendedor.
+A comissão calculada é armazenada na venda e pode ser consultada de forma consolidada por vendedor.
 
 ### 2. Controle de estoque
 
-O sistema permite realizar movimentações de estoque, incluindo:
+O sistema permite:
 
+* Cadastro de produtos;
 * Entrada de produtos;
 * Saída de produtos;
 * Atualização da quantidade disponível;
-* Validação de estoque suficiente para realizar uma saída;
+* Validação de estoque suficiente;
 * Retorno da quantidade final após a movimentação.
 
 ### 3. Pagamento e juros
@@ -50,11 +47,21 @@ A regra utilizada é:
 
 **2,5% de juros por dia de atraso.**
 
-Quando o pagamento ocorre no vencimento ou antes dele, nenhum juros é aplicado.
+Quando o pagamento ocorre no vencimento ou antes dele, não são aplicados juros.
 
----
+Exemplo:
 
-## Tecnologias utilizadas
+```text
+Valor:       R$ 1.000,00
+Vencimento:  01/10/2026
+Pagamento:   06/10/2026
+
+Dias de atraso: 5
+
+R$ 1.000,00 × 2,5% × 5 = R$ 125,00
+```
+
+## Tecnologias
 
 * Java 17
 * Spring Boot
@@ -66,14 +73,12 @@ Quando o pagamento ocorre no vencimento ou antes dele, nenhum juros é aplicado.
 * Lombok
 * ModelMapper
 * Springdoc OpenAPI / Swagger
-* Maven
 * JUnit
-
----
+* Maven
+* Docker
+* Docker Compose
 
 ## Arquitetura
-
-O projeto utiliza uma arquitetura em camadas:
 
 ```text
 Controller
@@ -90,7 +95,7 @@ Os DTOs são utilizados para separar os objetos de entrada e saída da API das e
 Exemplo:
 
 ```text
-Controller
+VendaController
     ↓
 VendaRequest
     ↓
@@ -100,8 +105,6 @@ VendaRepository
     ↓
 Venda
 ```
-
----
 
 ## Principais entidades
 
@@ -147,100 +150,99 @@ Estoque
  └── quantidade
 ```
 
----
-
 ## Validações
 
 O projeto utiliza **Bean Validation** para validar os dados recebidos pela API.
 
-Entre as validações implementadas estão:
+Entre as validações implementadas:
 
 * Campos obrigatórios;
 * Nome do vendedor;
 * Valores monetários maiores que zero;
-* Quantidades não negativas;
+* Quantidades válidas;
 * Produtos obrigatórios;
 * Datas obrigatórias;
 * Status de pagamento.
 
----
+As validações são tratadas por um `GlobalExceptionHandler`, retornando respostas HTTP padronizadas.
 
-## Exemplos de regras de negócio
+## Testes
 
-### Comissão
+Os testes automatizados estão focados principalmente nas **regras de negócio**, incluindo os cálculos de comissão e demais comportamentos relevantes da aplicação.
 
-Para uma venda de R$ 1.000,00:
+Para executar os testes:
 
-```text
-R$ 1.000,00 × 5% = R$ 50,00
+### Windows
+
+```bash
+mvnw.cmd test
 ```
 
-Para uma venda de R$ 200,00:
+### Linux/macOS
 
-```text
-R$ 200,00 × 1% = R$ 2,00
+```bash
+./mvnw test
 ```
-
-Para uma venda de R$ 80,00:
-
-```text
-Sem comissão
-```
-
-### Juros
-
-Venda:
-
-```text
-Valor: R$ 1.000,00
-Vencimento: 01/10/2026
-Pagamento: 06/10/2026
-```
-
-Dias de atraso:
-
-```text
-5 dias
-```
-
-Cálculo:
-
-```text
-R$ 1.000,00 × 2,5% × 5
-```
-
-Resultado:
-
-```text
-R$ 125,00 de juros
-```
-
----
 
 ## Banco de dados
 
-Durante o desenvolvimento foi utilizado o **H2 Database**, facilitando a execução e os testes da aplicação sem necessidade de configurar um banco de dados externo.
+Durante o desenvolvimento é utilizado o **H2 Database**, permitindo executar a aplicação sem a necessidade de configurar um banco externo.
+
+A aplicação utiliza:
 
 ```text
-http://localhost:8080/h2-console
+JDBC URL:
+jdbc:h2:mem:testdb
+
+Usuário:
+sa
 ```
----
+
+### H2 Console
+
+Com a aplicação executando localmente:
+
+```text
+http://localhost:8000/api/target/h2-console
+```
+
+No campo **JDBC URL**, utilize:
+
+```text
+jdbc:h2:mem:testdb
+```
+
+Usuário:
+
+```text
+sa
+```
+
+Senha:
+
+```text
+deixe em branco
+```
+
+> Quando executada em Docker, a configuração do H2 segue o mesmo banco utilizado pela aplicação.
 
 ## Documentação da API
 
-A API possui documentação através do **OpenAPI/Swagger**.
+A API possui documentação utilizando **OpenAPI/Swagger**.
 
-Após iniciar a aplicação, a documentação pode ser acessada em:
+Com a aplicação em execução:
 
 ```text
-http://localhost:8080/swagger-ui/index.html
+http://localhost:8000/api/target/swagger-ui/index.html
 ```
 
-A porta pode variar conforme a configuração da aplicação.
+A especificação OpenAPI pode ser acessada em:
 
----
+```text
+http://localhost:8000/api/target/v3/api-docs
+```
 
-## Como executar o projeto
+## Executar localmente
 
 ### Pré-requisitos
 
@@ -285,23 +287,69 @@ Ou utilizando Maven instalado:
 mvn spring-boot:run
 ```
 
----
+A API estará disponível em:
 
-## Executar os testes
-
-Windows:
-
-```bash
-mvnw.cmd test
+```text
+http://localhost:8000/api/target
 ```
 
-Linux/macOS:
+## Executar com Docker
+
+O projeto possui `Dockerfile` e `docker-compose.yml`.
+
+Para executar utilizando Docker Compose:
 
 ```bash
-./mvnw test
+docker compose up --build
 ```
 
----
+Para executar em segundo plano:
+
+```bash
+docker compose up -d --build
+```
+
+Para visualizar os logs:
+
+```bash
+docker compose logs -f
+```
+
+Para parar os containers:
+
+```bash
+docker compose down
+```
+
+A API estará disponível em:
+
+```text
+http://localhost:8000/api/target
+```
+
+O container utiliza a porta `8000`.
+
+## Exemplo de criação de venda
+
+Antes de criar uma venda, é necessário possuir um vendedor e um produto cadastrados.
+
+Exemplo:
+
+```json
+{
+  "instante": "2026-10-07",
+  "vendedor": "ID_DO_VENDEDOR",
+  "dataVencimento": "2026-10-07",
+  "produtos": [
+    {
+      "produtoId": "ID_DO_PRODUTO",
+      "quantidade": 1
+    }
+  ]
+}
+```
+
+Os valores `ID_DO_VENDEDOR` e `ID_DO_PRODUTO` devem ser substituídos pelos UUIDs retornados pelos respectivos cadastros.
 
 ## Estrutura do projeto
 
@@ -312,80 +360,38 @@ src
 │   │   └── com.target
 │   │       ├── controllers
 │   │       ├── entities
+│   │       ├── exceptions
 │   │       ├── repositories
-│   │       └── services
+│   │       └── service
 │   │
 │   └── resources
-│       └── application.properties
+│       ├── application.yml
+│       └── application-test.yml
 │
 └── test
     └── java
 ```
 
----
-
 ## Objetivo
 
-Este projeto foi desenvolvido como parte de um **teste técnico para avaliação de conhecimentos em desenvolvimento backend com Java e Spring Boot**, buscando aplicar conceitos de:
+Este projeto foi desenvolvido como parte de um teste técnico para avaliação de conhecimentos em desenvolvimento backend com Java e Spring Boot, aplicando conceitos de:
 
 * Orientação a objetos;
 * APIs REST;
 * Spring Boot;
 * Persistência com JPA;
 * DTOs;
-* Validação;
+* Bean Validation;
+* Tratamento de exceções;
 * Regras de negócio;
 * Controle de estoque;
 * Cálculos financeiros;
+* Testes unitários;
+* Docker;
 * Organização de código.
-
----
-```text para executar uma venda entrar no banco pegar ID de vendedor e ID de produto em estoque.```
-'''
-{
-  "instante": "2026-10-07",
-  "vendedor": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
-  "dataVencimento": "2026-10-07",
-  "produtos": [
-    {
-      "produtoId": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
-      "quantidade": 0
-    }
-  ]
-}
-'''
-
-```text Para acesso do h2 com o docker passe a senha jdbc:h2:mem:testdb ```
-
-para fazer teste da aplicação com o Docker, basta dar um docker compose up na raiz do pejeto.
-
-```
-services:
-  teste-tecnico-target:
-    build:
-      context: .
-      dockerfile: Dockerfile
-    container_name: teste-tecnico-target
-    ports:
-      - "8000:8000"
-    restart: always
-    volumes:
-      - h2-data:/data
-    networks:
-      - services
-
-volumes:
-  h2-data:
-
-networks:
-  services:
-    driver: bridge
-```
 
 ## Autor
 
 **Fernando da Silva**
 
-GitHub:
-
-https://github.com/Fernandolilo
+GitHub: [Fernandolilo](https://github.com/Fernandolilo)
