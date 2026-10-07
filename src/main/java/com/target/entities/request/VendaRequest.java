@@ -21,6 +21,8 @@ public class VendaRequest {
 	private LocalDate instante;	
   
 	private UUID vendedor;
+	
+	private LocalDate dataVencimento;
     
 	  @Builder.Default
 	    private List<ItemVendaRequest> produtos =

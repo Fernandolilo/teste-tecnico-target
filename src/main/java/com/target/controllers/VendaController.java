@@ -7,11 +7,13 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.target.entities.Venda;
+import com.target.entities.request.PagamentoRequest;
 import com.target.entities.request.VendaRequest;
 import com.target.entities.response.ComissoesListResponse;
 import com.target.entities.response.VendaResponse;
@@ -52,5 +54,15 @@ public class VendaController {
     @GetMapping(value = "/commision")
     public ResponseEntity<ComissoesListResponse> findAllCommision() {
         return ResponseEntity.ok(service.findAllCommissions());
+    }
+    
+    @PutMapping("/{id}/pagamento")
+    public ResponseEntity<VendaResponse> pagar(
+            @PathVariable UUID id,
+            @RequestBody PagamentoRequest request) {
+
+        return ResponseEntity.ok(
+                service.pay(id, request)
+        );
     }
 }

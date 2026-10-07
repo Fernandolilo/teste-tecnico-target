@@ -1,6 +1,8 @@
 package com.target.service.impl;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
+import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -11,12 +13,14 @@ import org.springframework.stereotype.Service;
 
 import com.target.entities.Venda;
 import com.target.entities.Vendedor;
+import com.target.entities.request.PagamentoRequest;
 import com.target.entities.request.VendaRequest;
 import com.target.entities.response.ComissaoListResponse;
 import com.target.entities.response.ComissoesListResponse;
 import com.target.entities.response.VendaListResponse;
 import com.target.entities.response.VendaResponse;
 import com.target.entities.response.VendasListResponse;
+import com.target.entities.response.enums.StatusPagamento;
 import com.target.repositories.VendaRepository;
 import com.target.service.EstoqueService;
 import com.target.service.VendaService;
@@ -137,6 +141,72 @@ public class VendaServiceImpl implements VendaService {
 		    return ComissoesListResponse.builder()
 		            .vendedores(vendedores)
 		            .build();
+		}
+		
+		@Override
+		@Transactional
+		public VendaResponse pay(UUID id, PagamentoRequest request) {
+
+		    Venda venda = repository.findById(id)
+		            .orElseThrow(() ->
+		                    new RuntimeException("Venda não encontrada"));
+
+		    if (venda.getStatusPagamento() == StatusPagamento.PAGO) {
+		        throw new RuntimeException("Venda já está paga");
+		    }
+
+		    BigDecimal juros = calculateInterest(
+		            venda.getValorTotal(),
+		            venda.getDataVencimento(),
+		            request.getDataPagamento()
+		    );
+
+		    venda.setValorJuros(juros);
+
+		    venda.setStatusPagamento(
+		            request.getStatusPagamento()
+		    );
+
+		    venda.setDataPagamento(
+		            request.getDataPagamento()
+		    );
+
+		    repository.save(venda);
+
+		    return mapper.map(venda, VendaResponse.class);
+		}
+		
+		private BigDecimal calculateInterest(
+		        BigDecimal valor,
+		        LocalDate dataVencimento,
+		        LocalDate dataPagamento) {
+
+		    if (dataVencimento == null) {
+		        throw new RuntimeException(
+		                "A venda não possui data de vencimento"
+		        );
+		    }
+
+		    if (dataPagamento == null) {
+		        throw new RuntimeException(
+		                "A data de pagamento é obrigatória"
+		        );
+		    }
+
+		    if (!dataPagamento.isAfter(dataVencimento)) {
+		        return BigDecimal.ZERO;
+		    }
+
+		    long diasAtraso = ChronoUnit.DAYS.between(
+		            dataVencimento,
+		            dataPagamento
+		    );
+
+		    BigDecimal taxaDiaria = BigDecimal.valueOf(0.025);
+
+		    return valor
+		            .multiply(taxaDiaria)
+		            .multiply(BigDecimal.valueOf(diasAtraso));
 		}
 }
 

@@ -4,6 +4,7 @@ import java.math.BigDecimal;
 import java.util.UUID;
 
 import com.target.entities.Venda;
+import com.target.entities.request.PagamentoRequest;
 import com.target.entities.request.VendaRequest;
 import com.target.entities.response.ComissoesListResponse;
 import com.target.entities.response.VendaResponse;
@@ -20,4 +21,6 @@ public interface VendaService {
 	BigDecimal calculateCommission(BigDecimal valorTotal);
 	
 	ComissoesListResponse findAllCommissions();
+	
+	VendaResponse pay(UUID id, PagamentoRequest request);
 }
