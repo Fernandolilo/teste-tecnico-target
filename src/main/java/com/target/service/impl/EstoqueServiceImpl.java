@@ -1,7 +1,6 @@
 package com.target.service.impl;
 
 import java.math.BigDecimal;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -13,6 +12,8 @@ import com.target.entities.Estoque;
 import com.target.entities.request.EstoqueRequest;
 import com.target.entities.response.EstoqueListResponse;
 import com.target.entities.response.EstoqueResponse;
+import com.target.exceptions.BusinessException;
+import com.target.exceptions.ResourceNotFoundException;
 import com.target.repositories.EstoqueRepository;
 import com.target.service.EstoqueService;
 
@@ -55,7 +56,7 @@ public class EstoqueServiceImpl implements EstoqueService {
 		Optional<Estoque> entity = repository.findById(id);
 
 		if (entity.isEmpty()) {
-			throw new RuntimeException("Produto não encontrado");
+			throw new ResourceNotFoundException("Produto não encontrado");
 		}
 		EstoqueResponse response = mapper.map(entity, EstoqueResponse.class);
 
@@ -69,7 +70,7 @@ public class EstoqueServiceImpl implements EstoqueService {
 		Estoque estoque = repository.findById(id).orElseThrow(() -> new RuntimeException("Produto não encontrado"));
 
 		if (estoque.getQuantidade() < quantidade) {
-			throw new RuntimeException("Estoque insuficiente para o produto: " + estoque.getDescricaoProduto());
+			throw new BusinessException("Estoque insuficiente para o produto: " + estoque.getDescricaoProduto());
 		}
 
 		estoque.setQuantidade(estoque.getQuantidade() - quantidade);
@@ -82,7 +83,7 @@ public class EstoqueServiceImpl implements EstoqueService {
 	public BigDecimal calculateItemTotal(UUID produtoId, Integer quantidade) {
 		Estoque estoque = repository.findById(produtoId)
 	            .orElseThrow(() ->
-	                    new RuntimeException("Produto não encontrado"));
+	                    new ResourceNotFoundException("Produto não encontrado"));
 
 	    return estoque.getPrecoProduto()
 	            .multiply(BigDecimal.valueOf(quantidade));	}

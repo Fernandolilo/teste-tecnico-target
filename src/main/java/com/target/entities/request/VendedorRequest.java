@@ -1,6 +1,8 @@
+
 package com.target.entities.request;
 
-import jakarta.persistence.Column;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -12,6 +14,12 @@ import lombok.NoArgsConstructor;
 @Data
 public class VendedorRequest {
 
-	@Column(name = "NOME_VENDEDOR")
-	private String nome;
+    @NotBlank(message = "O nome do vendedor é obrigatório")
+    @Size(
+        min = 3,
+        max = 100,
+        message = "O nome do vendedor deve ter entre 3 e 100 caracteres"
+    )
+    private String nome;
 }
+

@@ -21,6 +21,8 @@ import com.target.entities.response.VendaListResponse;
 import com.target.entities.response.VendaResponse;
 import com.target.entities.response.VendasListResponse;
 import com.target.entities.response.enums.StatusPagamento;
+import com.target.exceptions.BusinessException;
+import com.target.exceptions.ResourceNotFoundException;
 import com.target.repositories.VendaRepository;
 import com.target.service.EstoqueService;
 import com.target.service.VendaService;
@@ -86,7 +88,7 @@ public class VendaServiceImpl implements VendaService {
 
 	        Venda entity = repository.findById(id)
 	                .orElseThrow(() ->
-	                        new RuntimeException("Venda não encontrada"));
+	                        new ResourceNotFoundException("Venda não encontrada"));
 
 	        return mapper.map(entity, VendaResponse.class);
 	    }
@@ -169,7 +171,7 @@ public class VendaServiceImpl implements VendaService {
 		                    new RuntimeException("Venda não encontrada"));
 
 		    if (venda.getStatusPagamento() == StatusPagamento.PAGO) {
-		        throw new RuntimeException("Venda já está paga");
+		        throw new BusinessException("Venda já está paga");
 		    }
 
 		    BigDecimal juros = calculateInterest(
@@ -204,13 +206,13 @@ public class VendaServiceImpl implements VendaService {
 		        LocalDate dataPagamento) {
 
 		    if (dataVencimento == null) {
-		        throw new RuntimeException(
+		        throw new ResourceNotFoundException(
 		                "A venda não possui data de vencimento"
 		        );
 		    }
 
 		    if (dataPagamento == null) {
-		        throw new RuntimeException(
+		        throw new ResourceNotFoundException(
 		                "A data de pagamento é obrigatória"
 		        );
 		    }
