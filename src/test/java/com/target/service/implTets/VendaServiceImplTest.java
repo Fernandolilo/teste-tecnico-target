@@ -79,4 +79,49 @@ class VendaServiceImplTest {
                 resultado.compareTo(new BigDecimal("50.00"))
         );
     }
+    
+    @Test
+    void deveRetornarZeroParaVendaDe99Reais() {
+        BigDecimal resultado = service.calculateCommission(
+                new BigDecimal("99.00")
+        );
+
+        assertEquals(0, resultado.compareTo(BigDecimal.ZERO));
+    }
+
+    @Test
+    void deveCalcular1PorcentoParaVendaDe100Reais() {
+        BigDecimal resultado = service.calculateCommission(
+                new BigDecimal("100.00")
+        );
+
+        assertEquals(
+                0,
+                resultado.compareTo(new BigDecimal("1.00"))
+        );
+    }
+
+    @Test
+    void deveCalcular1PorcentoParaVendaDe499Reais() {
+        BigDecimal resultado = service.calculateCommission(
+                new BigDecimal("499.00")
+        );
+
+        assertEquals(
+                0,
+                resultado.compareTo(new BigDecimal("4.99"))
+        );
+    }
+
+    @Test
+    void deveCalcular5PorcentoParaVendaDe500Reais() {
+        BigDecimal resultado = service.calculateCommission(
+                new BigDecimal("500.00")
+        );
+
+        assertEquals(
+                0,
+                resultado.compareTo(new BigDecimal("25.00"))
+        );
+    }
 }
