@@ -49,7 +49,13 @@ public class VendaServiceImpl implements VendaService {
 		                vendedorService.findEntityById(request.getVendedor());
 
 		        venda.setVendedor(vendedor);
-
+		       
+		        venda.getProdutos().forEach(item -> {
+		            estoqueService.reduceStock(
+		                    item.getId(),
+		                    item.getQuantidade()
+		            );
+		        });
 		        BigDecimal total = calculateTotal(request);
 
 		        venda.setValorTotal(total);
