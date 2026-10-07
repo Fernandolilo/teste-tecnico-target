@@ -340,6 +340,20 @@ Este projeto foi desenvolvido como parte de um **teste técnico para avaliação
 * Organização de código.
 
 ---
+```text para executar uma venda entrar no banco pegar ID de vendedor e ID de produto em estoque.```
+'''
+{
+  "instante": "2026-10-07",
+  "vendedor": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+  "dataVencimento": "2026-10-07",
+  "produtos": [
+    {
+      "produtoId": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+      "quantidade": 0
+    }
+  ]
+}
+'''
 
 ## Autor
 
