@@ -9,6 +9,12 @@ spring:
   profiles:
     active:
       - test
-      
+
+  logging:
+    file:
+      name: logs/api.log
+    level:
+      root: INFO
+      com.invest.utils: DEBUG
 
 
