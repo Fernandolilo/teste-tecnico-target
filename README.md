@@ -242,6 +242,10 @@ A especificação OpenAPI pode ser acessada em:
 http://localhost:8000/api/target/v3/api-docs
 ```
 
+```text
+http://localhost:8000/api/target/logs
+```
+TEMOS UM ENDPOINT QUE COBRE 100% DE LOGS DA API, PROTEGENDO PASSWORD OU SENHA SEJA COMO O DEV DEFINIR
 ## Executar localmente
 
 ### Pré-requisitos
